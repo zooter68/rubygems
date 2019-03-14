@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "uri"
+
 module Bundler
   class Settings
     autoload :Mirror,  File.expand_path("mirror", __dir__)
@@ -149,11 +151,7 @@ module Bundler
     end
 
     def mirror_for(uri)
-      if uri.is_a?(String)
-        require_relative "vendored_uri"
-        uri = Bundler::URI(uri)
-      end
-
+      uri = URI(uri.to_s) unless uri.is_a?(URI)
       gem_mirrors.for(uri.to_s).uri
     end
 
@@ -354,8 +352,8 @@ module Bundler
       return unless file
       SharedHelpers.filesystem_access(file) do |p|
         FileUtils.mkdir_p(p.dirname)
-        require_relative "yaml_serializer"
-        p.open("w") {|f| f.write(YAMLSerializer.dump(hash)) }
+        require "yaml"
+        p.open("w") {|f| f.write(YAML.dump(hash)) }
       end
     end
 
@@ -394,8 +392,8 @@ module Bundler
       SharedHelpers.filesystem_access(config_file, :read) do |file|
         valid_file = file.exist? && !file.size.zero?
         return {} unless valid_file
-        require_relative "yaml_serializer"
-        YAMLSerializer.load file.read
+        require "yaml"
+        YAML.load file.read
       end
     end
 
@@ -422,8 +420,7 @@ module Bundler
         suffix = $3
       end
       uri = "#{uri}/" unless uri.end_with?("/")
-      require_relative "vendored_uri"
-      uri = Bundler::URI(uri)
+      uri = URI(uri)
       unless uri.absolute?
         raise ArgumentError, format("Gem sources must be absolute. You provided '%s'.", uri)
       end

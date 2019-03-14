@@ -4,7 +4,7 @@ require_relative "support/path"
 
 $:.unshift Spec::Path.lib_dir.to_s
 
-require "bundler/psyched_yaml"
+require "yaml"
 require "bundler/vendored_fileutils"
 require "bundler/vendored_uri"
 require "digest"
