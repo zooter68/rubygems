@@ -388,47 +388,47 @@ By default, this RubyGems will install gem as:
     specs_dir = File.join(options[:destdir], specs_dir) unless Gem.win_platform?
     mkdir_p specs_dir, :mode => 0755
 
-    # Workaround for non-git environment.
-    gemspec = File.open('bundler/bundler.gemspec', 'rb'){|f| f.read.gsub(/`git ls-files -z`/, 'Dir["{*.md,{lib,exe,man}/**/*}"]') }
-    File.open('bundler/bundler.gemspec', 'w'){|f| f.write gemspec }
-
-    bundler_spec = Gem::Specification.load("bundler/bundler.gemspec")
-
-    # Remove bundler-*.gemspec in default specification directory.
-    Dir.entries(specs_dir).
-      select {|gs| gs.start_with?("bundler-") }.
-      each {|gs| File.delete(File.join(specs_dir, gs)) }
-
-    default_spec_path = File.join(specs_dir, "#{bundler_spec.full_name}.gemspec")
-    Gem.write_binary(default_spec_path, bundler_spec.to_ruby)
-
-    bundler_spec = Gem::Specification.load(default_spec_path)
-
-    # Remove gemspec that was same version of vendored bundler.
-    normal_gemspec = File.join(Gem.default_dir, "specifications", "bundler-#{bundler_spec.version}.gemspec")
-    if File.file? normal_gemspec
-      File.delete normal_gemspec
-    end
-
-    # Remove gem files that were same version of vendored bundler.
-    if File.directory? bundler_spec.gems_dir
-      Dir.entries(bundler_spec.gems_dir).
-        select {|default_gem| File.basename(default_gem) == "bundler-#{bundler_spec.version}" }.
-        each {|default_gem| rm_r File.join(bundler_spec.gems_dir, default_gem) }
-    end
-
-    bundler_bin_dir = bundler_spec.bin_dir
-    mkdir_p bundler_bin_dir, :mode => 0755
-
-    require 'rubygems/installer'
-
     Dir.chdir("bundler") do
+      # Workaround for non-git environment.
+      gemspec = File.open('bundler.gemspec', 'rb'){|f| f.read.gsub(/`git ls-files -z`/, 'Dir["{*.md,{lib,exe,man}/**/*}"]') }
+      File.open('bundler.gemspec', 'w'){|f| f.write gemspec }
+
+      bundler_spec = Gem::Specification.load("bundler.gemspec")
+
+      # Remove bundler-*.gemspec in default specification directory.
+      Dir.entries(specs_dir).
+        select {|gs| gs.start_with?("bundler-") }.
+        each {|gs| File.delete(File.join(specs_dir, gs)) }
+
+      default_spec_path = File.join(specs_dir, "#{bundler_spec.full_name}.gemspec")
+      Gem.write_binary(default_spec_path, bundler_spec.to_ruby)
+
+      bundler_spec = Gem::Specification.load(default_spec_path)
+
+      # Remove gemspec that was same version of vendored bundler.
+      normal_gemspec = File.join(Gem.default_dir, "specifications", "bundler-#{bundler_spec.version}.gemspec")
+      if File.file? normal_gemspec
+        File.delete normal_gemspec
+      end
+
+      # Remove gem files that were same version of vendored bundler.
+      if File.directory? bundler_spec.gems_dir
+        Dir.entries(bundler_spec.gems_dir).
+          select {|default_gem| File.basename(default_gem) == "bundler-#{bundler_spec.version}" }.
+          each {|default_gem| rm_r File.join(bundler_spec.gems_dir, default_gem) }
+      end
+
+      bundler_bin_dir = bundler_spec.bin_dir
+      mkdir_p bundler_bin_dir, :mode => 0755
+
+      require 'rubygems/installer'
+
       built_gem = Gem::Package.build(bundler_spec)
       installer = Gem::Installer.at(built_gem, env_shebang: options[:env_shebang], install_as_default: true, bin_dir: bin_dir, wrappers: true)
       installer.install
-    end
 
-    say "Bundler #{bundler_spec.version} installed"
+      say "Bundler #{bundler_spec.version} installed"
+    end
   end
 
   def make_destination_dirs(install_destdir)
