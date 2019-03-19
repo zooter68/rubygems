@@ -189,8 +189,10 @@ class TestGemCommandsSetupCommand < Gem::TestCase
     bin_dir = File.join(@gemhome, 'bin')
     @cmd.install_default_bundler_gem bin_dir
 
+    default_dir = Gem::Specification.default_specifications_dir
+
     bundler_spec = Gem::Specification.load("bundler/bundler.gemspec")
-    default_spec_path = File.join(Gem::Specification.default_specifications_dir, "#{bundler_spec.full_name}.gemspec")
+    default_spec_path = File.join(default_dir, "#{bundler_spec.full_name}.gemspec")
     spec = Gem::Specification.load(default_spec_path)
 
     spec.executables.each do |e|
@@ -200,8 +202,6 @@ class TestGemCommandsSetupCommand < Gem::TestCase
 
       assert_path_exists File.join bin_dir, e
     end
-
-    default_dir = Gem::Specification.default_specifications_dir
 
     # expect to remove other versions of bundler gemspecs on default specification directory.
     refute_path_exists File.join(default_dir, "bundler-1.15.4.gemspec")
