@@ -74,8 +74,10 @@ class TestGemCommandsSetupCommand < Gem::TestCase
 
     FileUtils.mkdir_p File.join(Gem.default_dir, "specifications")
 
-    open(File.join(Gem.default_dir, "specifications", "bundler-#{BUNDLER_VERS}.gemspec"), 'w') do |io|
-      io.puts "# bundler-#{BUNDLER_VERS}"
+    current_fullname = "bundler-#{BUNDLER_VERS}"
+
+    open(File.join(Gem.default_dir, "specifications", "#{current_fullname}.gemspec"), 'w') do |io|
+      io.puts "# {current_fullname}"
     end
 
     open(File.join(Gem.default_dir, "specifications", "bundler-audit-1.0.0.gemspec"), 'w') do |io|
