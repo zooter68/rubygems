@@ -390,10 +390,10 @@ By default, this RubyGems will install gem as:
 
     Dir.chdir("bundler") do
       # Workaround for non-git environment.
-      gemspec = File.open('bundler.gemspec', 'rb'){|f| f.read.gsub(/s\.files =.*/, 's.files = Dir.glob("{lib,exe}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }') }
-      File.open('bundler.gemspec', 'w'){|f| f.write gemspec }
+      non_git_gemspec_content = File.read('bundler.gemspec').gsub(/s\.files =.*/, 's.files = Dir.glob("{lib,exe}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }')
 
-      bundler_spec = Gem::Specification.load("bundler.gemspec")
+      bundler_spec = eval non_git_gemspec_content, binding, "bundler.gemspec"
+      bundler_spec.loaded_from = File.expand_path("bundler.gemspec")
 
       # Remove bundler-*.gemspec in default specification directory.
       Dir.entries(specs_dir).
@@ -423,9 +423,13 @@ By default, this RubyGems will install gem as:
 
       require 'rubygems/installer'
 
-      built_gem = Gem::Package.build(bundler_spec)
-      installer = Gem::Installer.at(built_gem, env_shebang: options[:env_shebang], install_as_default: true, bin_dir: bin_dir, wrappers: true)
-      installer.install
+      begin
+        built_gem = Gem::Package.build(bundler_spec)
+        installer = Gem::Installer.at(built_gem, env_shebang: options[:env_shebang], install_as_default: true, bin_dir: bin_dir, wrappers: true)
+        installer.install
+      ensure
+        rm "bundler-#{bundler_spec.version}.gem"
+      end
 
       say "Bundler #{bundler_spec.version} installed"
     end
