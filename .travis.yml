@@ -23,9 +23,13 @@ jobs:
       env:
         - "TEST_TOOL=rubygems"
       script: util/ci rubocop
+    - stage: installing_non_git
+      rvm: 2.6
+      script: sudo apt purge git -y && ruby setup.rb
 stages:
   - linting
   - test
+  - installing_non_git
 before_script:
   - util/ci before_script
 script:
