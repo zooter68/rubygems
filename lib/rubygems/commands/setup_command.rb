@@ -390,7 +390,7 @@ By default, this RubyGems will install gem as:
 
     Dir.chdir("bundler") do
       # Workaround for non-git environment.
-      gemspec = File.open('bundler.gemspec', 'rb'){|f| f.read.gsub(/`git ls-files -z`/, 'Dir["{*.md,{lib,exe,man}/**/*}"]') }
+      gemspec = File.open('bundler.gemspec', 'rb'){|f| f.read.gsub(/s\.files =.*/, 's.files = Dir.glob("{lib,exe}/**/*", File::FNM_DOTMATCH).reject {|f| File.directory?(f) }') }
       File.open('bundler.gemspec', 'w'){|f| f.write gemspec }
 
       bundler_spec = Gem::Specification.load("bundler.gemspec")
