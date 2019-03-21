@@ -26,10 +26,8 @@ jobs:
       script: util/ci rubocop
     - stage: installing_non_git
       rvm: 2.6
-      script: sudo apt purge git -y && ruby setup.rb
+      script: sudo apt purge git -y && ruby setup.rb --backtrace
 stages:
-  - linting
-  - test
   - installing_non_git
 before_script:
   - util/ci before_script
