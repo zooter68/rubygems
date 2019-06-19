@@ -49,13 +49,13 @@ end
 case ARGV
 when %w(before_script)
   if TOOL.rubygems?
-    run('bin/gem', %W(uninstall executable-hooks gem-wrappers bundler-unload -x --force -i #{`gem env home`.strip}@global))
+    run('bin/gem', %W(uninstall executable-hooks gem-wrappers bundler-unload -x --force -i #{`bin/gem env home`.strip}@global))
 
     # shipped gems in 2.3.8
     run('rake', 'setup')
 
-    run('gem', %w(list --details))
-    run('gem', %w(env))
+    run('bin/gem', %w(list --details))
+    run('bin/gem', %w(env))
   else
     if ENV["BDV"]
       run('git', %W(reset --hard origin/#{ENV["BDV"]}))
@@ -64,7 +64,7 @@ when %w(before_script)
     with_retries { run('rake', %w(spec:travis:deps)) }
   end
 when %w(rubocop)
-  run('gem', %w(install rubocop -v ~>0.71.0))
+  run('bin/gem', %w(install rubocop -v ~>0.71.0))
   run('util/rubocop')
 when %w(script)
   if TOOL.rubygems?

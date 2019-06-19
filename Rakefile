@@ -10,7 +10,7 @@ task :setup => ["bundler:checkout"] do
   gemspec = Gem::Specification.load(File.expand_path("../rubygems-update.gemspec", __FILE__))
 
   gemspec.dependencies.each do |dep|
-    sh "gem install '#{dep.name}:#{dep.requirement.to_s}' --conservative --no-document"
+    sh "bin/gem install '#{dep.name}:#{dep.requirement.to_s}' --conservative --no-document"
   end
 end
 
@@ -74,7 +74,7 @@ task(:bisect) do
            abort "Specify the failing seed as the SEED environment variable"
          end
 
-  gemdir = `gem env gemdir`.chomp
+  gemdir = `bin/gem env gemdir`.chomp
   sh "SEED=#{seed} MTB_VERBOSE=2 util/bisect -Ilib:bundler/lib:test:#{gemdir}/gems/minitest-server-1.0.5/lib test"
 end
 
@@ -96,7 +96,7 @@ end
 desc "Release rubygems-#{v}"
 task :release => :prerelease do
   Rake::Task["package"].invoke
-  sh "gem push pkg/rubygems-update-#{v}.gem"
+  sh "bin/gem push pkg/rubygems-update-#{v}.gem"
   Rake::Task["postrelease"].invoke
 end
 
