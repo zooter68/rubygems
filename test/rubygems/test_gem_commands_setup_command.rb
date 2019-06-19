@@ -20,10 +20,10 @@ class TestGemCommandsSetupCommand < Gem::TestCase
     @cmd = Gem::Commands::SetupCommand.new
     @cmd.options[:prefix] = @install_dir
 
-    FileUtils.mkdir_p 'bin'
+    FileUtils.mkdir_p 'exe'
     FileUtils.mkdir_p 'lib/rubygems/ssl_certs/rubygems.org'
 
-    File.open 'bin/gem',                   'w' do
+    File.open 'exe/gem',                   'w' do
       |io| io.puts '# gem'
     end
 
