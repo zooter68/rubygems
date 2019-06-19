@@ -7,6 +7,7 @@ branches:
     - trying
     - /^[\d.]+$/
     - /.+-stable$/
+    - move_gem_to_exe
 env:
   - "TEST_TOOL=rubygems"
   - "TEST_TOOL=bundler RGV=master"
