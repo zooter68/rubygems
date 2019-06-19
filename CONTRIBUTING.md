@@ -35,7 +35,7 @@ here: http://guides.rubygems.org/contributing/
 
 To run commands like `gem install` from the repo:
 
-    $ ruby -Ilib exe/gem install
+    $ bin/gem install
 
 To run bundler test:
 

@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'rbconfig'
+
+ruby = File.join RbConfig::CONFIG['bindir'], RbConfig::CONFIG['ruby_install_name']
+ruby << RbConfig::CONFIG['EXEEXT']
+
+exe = File.expand_path("../exe", __dir__)
+
+exec ruby, "--disable-gems", "-Ilib", "#{exe}/gem", *ARGV
