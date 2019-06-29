@@ -12,7 +12,7 @@ if File.exist?(bundler_gemspec)
 end
 
 begin
-  gem 'minitest', '~> 5.0'
+  gem 'test-unit', '~> 3.0'
 rescue Gem::LoadError
 end
 
@@ -28,7 +28,7 @@ end
 
 require 'bundler'
 
-require 'minitest/autorun'
+require 'test/unit'
 
 require 'rubygems/deprecate'
 
@@ -98,7 +98,7 @@ end
 # and uninstall gems, fetch remote gems through a stub fetcher and be assured
 # your normal set of gems is not affected.
 
-class Gem::TestCase < (defined?(Minitest::Test) ? Minitest::Test : MiniTest::Unit::TestCase)
+class Gem::TestCase < Test::Unit::TestCase
 
   extend Gem::Deprecate
 
@@ -129,12 +129,12 @@ class Gem::TestCase < (defined?(Minitest::Test) ? Minitest::Test : MiniTest::Uni
 
   # TODO: move to minitest
   def assert_path_exists(path, msg = nil)
-    msg = message(msg) { "Expected path '#{path}' to exist" }
+    msg = build_message(msg, "Expected path '#{path}' to exist")
     assert File.exist?(path), msg
   end
 
   def assert_directory_exists(path, msg = nil)
-    msg = message(msg) { "Expected path '#{path}' to be a directory" }
+    msg = build_message(msg, "Expected path '#{path}' to be a directory")
     assert_path_exists path
     assert File.directory?(path), msg
   end
@@ -228,7 +228,7 @@ class Gem::TestCase < (defined?(Minitest::Test) ? Minitest::Test : MiniTest::Uni
 
   # TODO: move to minitest
   def refute_path_exists(path, msg = nil)
-    msg = message(msg) { "Expected path '#{path}' to not exist" }
+    msg = build_message(msg, "Expected path '#{path}' to not exist")
     refute File.exist?(path), msg
   end
 
@@ -262,19 +262,19 @@ class Gem::TestCase < (defined?(Minitest::Test) ? Minitest::Test : MiniTest::Uni
 
   def assert_contains_make_command(target, output, msg = nil)
     if output.match(/\n/)
-      msg = message(msg) do
+      msg = build_message(msg,
         'Expected output containing make command "%s": %s' % [
           ('%s %s' % [make_command, target]).rstrip,
           output.inspect
         ]
-      end
+      )
     else
-      msg = message(msg) do
+      msg = build_message(msg,
         'Expected make command "%s": %s' % [
           ('%s %s' % [make_command, target]).rstrip,
           output.inspect
         ]
-      end
+      )
     end
 
     assert scan_make_command_lines(output).any? { |line|
@@ -1029,6 +1029,7 @@ Also, a list:
 
     spec_fetcher.specs[@uri] = []
     all.each do |spec|
+
       spec_fetcher.specs[@uri] << spec.name_tuple
     end
 
