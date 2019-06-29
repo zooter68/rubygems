@@ -39,7 +39,7 @@ class TestGemDoctor < Gem::TestCase
 
     doctor = Gem::Doctor.new @gemhome
 
-    capture_io do
+    capture_output do
       use_ui @ui do
         doctor.doctor
       end
@@ -92,7 +92,7 @@ Removed directory gems/c-2
 
     doctor = Gem::Doctor.new @gemhome, true
 
-    capture_io do
+    capture_output do
       use_ui @ui do
         doctor.doctor
       end
@@ -128,7 +128,7 @@ Extra directory gems/c-2
 
     doctor = Gem::Doctor.new @tempdir
 
-    capture_io do
+    capture_output do
       use_ui @ui do
         doctor.doctor
       end

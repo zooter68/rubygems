@@ -82,7 +82,7 @@ class TestGemRequestSetGemDependencyAPI < Gem::TestCase
   def test_gem_duplicate
     @gda.gem 'a'
 
-    _, err = capture_io do
+    _, err = capture_output do
       @gda.gem 'a'
     end
 
@@ -130,7 +130,7 @@ class TestGemRequestSetGemDependencyAPI < Gem::TestCase
   end
 
   def test_gem_git_branch
-    _, err = capture_io do
+    _, err = capture_output do
       @gda.gem 'a', :git => 'git/a', :branch => 'other', :tag => 'v1'
     end
     expected = "Gem dependencies file gem.deps.rb includes git reference for both ref/branch and tag but only ref/branch is used."
@@ -151,7 +151,7 @@ class TestGemRequestSetGemDependencyAPI < Gem::TestCase
   end
 
   def test_gem_git_ref
-    _, err = capture_io do
+    _, err = capture_output do
       @gda.gem 'a', :git => 'git/a', :ref => 'abcd123', :branch => 'other'
     end
     expected = "Gem dependencies file gem.deps.rb includes git reference for both ref and branch but only ref is used."
@@ -519,7 +519,7 @@ class TestGemRequestSetGemDependencyAPI < Gem::TestCase
     FileUtils.touch 'a.gemspec'
 
     e = assert_raises ArgumentError do
-      capture_io do
+      capture_output do
         @gda.gemspec
       end
     end
