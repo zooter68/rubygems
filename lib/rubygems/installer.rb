@@ -585,7 +585,7 @@ class Gem::Installer
   #
 
   def shebang(bin_file_name)
-    ruby_name = RbConfig::CONFIG['ruby_install_name'] if @env_shebang
+    ruby_name = ruby_install_name if @env_shebang
     path = File.join gem_dir, spec.bindir, bin_file_name
     first_line = File.open(path, "rb") {|file| file.gets}
 
@@ -598,7 +598,7 @@ class Gem::Installer
 
     if which = Gem.configuration[:custom_shebang]
       # replace bin_file_name with "ruby" to avoid endless loops
-      which = which.gsub(/ #{bin_file_name}$/," #{RbConfig::CONFIG['ruby_install_name']}")
+      which = which.gsub(/ #{bin_file_name}$/," #{ruby_install_name}")
 
       which = which.gsub(/\$(\w+)/) do
         case $1
@@ -802,7 +802,6 @@ TEXT
   # return the stub script text used to launch the true Ruby script
 
   def windows_stub_script(bindir, bin_file_name)
-    rb_config = RbConfig::CONFIG
     rb_topdir = RbConfig::TOPDIR || File.dirname(rb_config["bindir"])
 
     # get ruby executable file name from RbConfig
@@ -957,6 +956,16 @@ TEXT
   def write_cache_file
     cache_file = File.join gem_home, 'cache', spec.file_name
     @package.copy_to cache_file
+  end
+
+  private
+
+  def rb_config
+    RbCOnfig::CONFIG
+  end
+
+  def ruby_install_name
+    rb_config["ruby_install_name"]
   end
 
 end
