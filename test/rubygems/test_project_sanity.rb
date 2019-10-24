@@ -40,6 +40,8 @@ class TestProjectSanity < Minitest::Test
       ```
       #{output}
       ```
+
+      The content of bin/bundle is #{File.read("/home/runner/.rvm/rubies/ruby-head/bin/bundle") if File.exist?("/home/runner/.rvm/rubies/ruby-head/bin/bundle")}
     MSG
   end
 
