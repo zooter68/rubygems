@@ -31,7 +31,7 @@ jobs:
       - name: Set up Ruby
         run: |
           source $HOME/.rvm/scripts/rvm
-          rvm install ${{ matrix.ruby }} --binary --without-gems="rubygems-bundler rvm gem-wrappers"
+          rvm install --without-gems="rubygems-bundler rvm gem-wrappers" ${{ matrix.ruby }} --binary
           rvm --default use ${{ matrix.ruby }}
       - name: Install dependencies
         run: |
