@@ -27,11 +27,11 @@ jobs:
           sudo chmod -R go-w /opt
       - name: Set up RVM
         run: |
-          curl -sSL https://get.rvm.io | bash
+          curl -sSL https://get.rvm.io | bash -s stable --without-gems="rvm rubygems-bundler gem-wrappers"
       - name: Set up Ruby
         run: |
           source $HOME/.rvm/scripts/rvm
-          rvm install --without-gems="rubygems-bundler rvm gem-wrappers" ${{ matrix.ruby }} --binary
+          rvm install ${{ matrix.ruby }} --binary
           rvm --default use ${{ matrix.ruby }}
       - name: Install dependencies
         run: |
