@@ -404,6 +404,14 @@ By default, this RubyGems will install gem as:
     same_default_bundler = bundler_default_specs.delete(bundler_spec.full_name)
     return if same_default_bundler
 
+    installer_options = {
+      env_shebang: options[:env_shebang],
+      format_executable: options[:format_executable],
+      force: options[:force],
+      bin_dir: bin_dir,
+      wrappers: true
+    }
+
     bundler_default_specs.each do |gs|
       spec = Gem::Specification.load(File.join(specs_dir, gs))
       spec.loaded_from = nil
@@ -417,8 +425,7 @@ By default, this RubyGems will install gem as:
         Gem::RemoteFetcher.fetcher.download_to_cache dep, spec.base_dir
       end
 
-      installer = Gem::Installer.at(gem, env_shebang: options[:env_shebang], format_executable: options[:format_executable], force: options[:force], bin_dir: bin_dir, wrappers: true)
-      installer.install
+      Gem::Installer.at(gem, installer_options).install
 
       File.delete(File.join(specs_dir, gs))
     end
@@ -453,8 +460,7 @@ By default, this RubyGems will install gem as:
     Dir.chdir("bundler") do
       built_gem = Gem::Package.build(bundler_spec)
       begin
-        installer = Gem::Installer.at(built_gem, env_shebang: options[:env_shebang], format_executable: options[:format_executable], force: options[:force], install_as_default: true, bin_dir: bin_dir, wrappers: true)
-        installer.install
+        Gem::Installer.at(built_gem, installer_options.merge(install_as_default: true)).install
       ensure
         FileUtils.rm_f built_gem
       end
