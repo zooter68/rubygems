@@ -404,8 +404,17 @@ By default, this RubyGems will install gem as:
     same_default_bundler = bundler_default_specs.delete(bundler_spec.full_name)
     return if same_default_bundler
 
-    # Remove bundler-*.gemspec in default specification directory.
-    bundler_default_specs.each {|gs| File.delete(File.join(specs_dir, gs)) }
+    bundler_default_specs.each do |gs|
+      spec = Gem::Specification.load(File.join(specs_dir, gs))
+      spec.loaded_from = nil
+
+      gem = spec.cache_file
+
+      installer = Gem::Installer.at(gem, env_shebang: options[:env_shebang], format_executable: options[:format_executable], force: options[:force], bin_dir: bin_dir, wrappers: true)
+      installer.install
+
+      File.delete(File.join(specs_dir, gs))
+    end
 
     default_spec_path = File.join(specs_dir, "#{bundler_spec.full_name}.gemspec")
     Gem.write_binary(default_spec_path, bundler_spec.to_ruby)
