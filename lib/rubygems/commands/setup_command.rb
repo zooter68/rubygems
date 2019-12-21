@@ -399,10 +399,13 @@ By default, this RubyGems will install gem as:
     bundler_spec.files = Dir.chdir("bundler") { Dir["{*.md,{lib,exe,man}/**/*}"] }
     bundler_spec.executables -= %w[bundler bundle_ruby]
 
+    bundler_default_specs = Dir.entries(specs_dir).select {|gs| gs.start_with?("bundler-") }
+
+    same_default_bundler = bundler_default_specs.delete(bundler_spec.full_name)
+    return if same_default_bundler
+
     # Remove bundler-*.gemspec in default specification directory.
-    Dir.entries(specs_dir).
-      select {|gs| gs.start_with?("bundler-") }.
-      each {|gs| File.delete(File.join(specs_dir, gs)) }
+    bundler_default_specs.each {|gs| File.delete(File.join(specs_dir, gs)) }
 
     default_spec_path = File.join(specs_dir, "#{bundler_spec.full_name}.gemspec")
     Gem.write_binary(default_spec_path, bundler_spec.to_ruby)
