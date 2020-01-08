@@ -2,7 +2,6 @@
 ##
 # The Dependency class holds a Gem name and a Gem::Requirement.
 
-require "rubygems/bundler_version_finder"
 require "rubygems/requirement"
 
 class Gem::Dependency
@@ -280,8 +279,6 @@ class Gem::Dependency
     matches = Gem::Specification.stubs_for(name).find_all do |spec|
       requirement.satisfied_by?(spec.version) && env_req.satisfied_by?(spec.version)
     end.map(&:to_spec)
-
-    Gem::BundlerVersionFinder.filter!(matches) if name == "bundler".freeze && !requirement.specific?
 
     if platform_only
       matches.reject! do |spec|
