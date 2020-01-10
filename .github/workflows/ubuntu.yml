@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby: [ '2.4.x', '2.5.x', '2.6.x' ]
-        test_tool: [ "rubygems", "bundler" ]
+        ruby: [ 2.4.x, 2.5.x, 2.6.x ]
+        test_tool: [ rubygems, bundler ]
     steps:
       - uses: actions/checkout@v1
       - run: git submodule update -i
