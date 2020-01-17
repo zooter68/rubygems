@@ -295,31 +295,33 @@ class Gem::Package
   def build(skip_validation = false, strict_validation = false)
     raise ArgumentError, "skip_validation = true and strict_validation = true are incompatible" if skip_validation && strict_validation
 
-    Gem.load_yaml
+    Gem.with_source_date_epoch do
+      Gem.load_yaml
 
-    @spec.mark_version
-    @spec.validate true, strict_validation unless skip_validation
+      @spec.mark_version
+      @spec.validate true, strict_validation unless skip_validation
 
-    setup_signer(
-      signer_options: {
-        expiration_length_days: Gem.configuration.cert_expiration_length_days
-      }
-    )
+      setup_signer(
+        signer_options: {
+          expiration_length_days: Gem.configuration.cert_expiration_length_days
+        }
+      )
 
-    @gem.with_write_io do |gem_io|
-      Gem::Package::TarWriter.new gem_io do |gem|
-        add_metadata gem
-        add_contents gem
-        add_checksums gem
+      @gem.with_write_io do |gem_io|
+        Gem::Package::TarWriter.new gem_io do |gem|
+          add_metadata gem
+          add_contents gem
+          add_checksums gem
+        end
       end
-    end
 
-    say <<-EOM
+      say <<-EOM
   Successfully built RubyGem
   Name: #{@spec.name}
   Version: #{@spec.version}
   File: #{File.basename @gem.path}
 EOM
+    end
   ensure
     @signer = nil
   end

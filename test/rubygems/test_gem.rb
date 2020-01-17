@@ -1913,6 +1913,48 @@ You may need to `gem install -g` to install missing gems
     assert platform_defaults.is_a? Hash
   end
 
+  def test_dont_leak_source_date_epoch
+    epoch = ENV["SOURCE_DATE_EPOCH"]
+    ENV["SOURCE_DATE_EPOCH"] = nil
+    Gem.source_date_epoch # Previously caused it to leak an environment variable.
+    assert_nil ENV["SOURCE_DATE_EPOCH"]
+  ensure
+    ENV["SOURCE_DATE_EPOCH"] = epoch
+  end
+
+  def test_with_source_date_epoch
+    epoch = ENV["SOURCE_DATE_EPOCH"]
+    ENV["SOURCE_DATE_EPOCH"] = nil
+
+    # It should not be set prior to running #with_source_date_epoch.
+    assert_nil ENV["SOURCE_DATE_EPOCH"]
+
+    Gem.with_source_date_epoch do
+      # It should be set inside #with_source_date_epoch.
+      refute_nil ENV["SOURCE_DATE_EPOCH"]
+    end
+
+    # It should be cleared again, outside of #with_source_date_epoch.
+    assert_nil ENV["SOURCE_DATE_EPOCH"]
+  ensure
+    ENV["SOURCE_DATE_EPOCH"] = epoch
+  end
+
+  def test_with_source_date_epoch_doesnt_clobber
+    epoch = ENV["SOURCE_DATE_EPOCH"]
+    ENV["SOURCE_DATE_EPOCH"] = "1234"
+
+    Gem.with_source_date_epoch do
+      # It should not be changed inside #with_source_date_epoch.
+      assert_equal "1234", ENV["SOURCE_DATE_EPOCH"]
+    end
+
+    # It should *not* be cleared after #with_source_date_epoch.
+    assert_equal "1234", ENV["SOURCE_DATE_EPOCH"]
+  ensure
+    ENV["SOURCE_DATE_EPOCH"] = epoch
+  end
+
   def ruby_install_name(name)
     with_clean_path_to_ruby do
       orig_RUBY_INSTALL_NAME = RbConfig::CONFIG['ruby_install_name']

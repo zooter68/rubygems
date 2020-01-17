@@ -215,9 +215,12 @@ class Gem::Package::TarWriter
 
     name, prefix = split_name name
 
-    header = Gem::Package::TarHeader.new(:name => name, :mode => mode,
-                                         :size => size, :prefix => prefix,
-                                         :mtime => Gem.source_date_epoch).to_s
+    header = nil
+    Gem.with_source_date_epoch do
+      header = Gem::Package::TarHeader.new(:name => name, :mode => mode,
+                                           :size => size, :prefix => prefix,
+                                           :mtime => Gem.source_date_epoch).to_s
+    end
 
     @io.write header
     os = BoundedStream.new @io, size
