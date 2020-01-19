@@ -189,6 +189,8 @@ module Gem
   @pre_reset_hooks      ||= []
   @post_reset_hooks     ||= []
 
+  @source_date_epoch = nil
+
   ##
   # Try to activate a gem containing +path+. Returns true if
   # activation succeeded or wasn't needed because it was already
@@ -1236,20 +1238,40 @@ An Array (#{env.inspect}) was passed in from #{caller[3]}
   end
 
   ##
-  # The SOURCE_DATE_EPOCH environment variable (or, if that's not set, the current time), converted to Time object.
-  # This is used throughout RubyGems for enabling reproducible builds.
-  #
-  # If it is not set as an environment variable already, this also sets it.
+  # If the SOURCE_DATE_EPOCH environment variable, returns it's value.
+  # Otherwise, returns the current time in a format suitable for that variable.
   #
   # Details on SOURCE_DATE_EPOCH:
   # https://reproducible-builds.org/specs/source-date-epoch/
 
-  def self.source_date_epoch
-    if ENV["SOURCE_DATE_EPOCH"].nil? || ENV["SOURCE_DATE_EPOCH"].empty?
-      ENV["SOURCE_DATE_EPOCH"] = Time.now.to_i.to_s
-    end
+  def self.raw_source_date_epoch
+    epoch = ENV["SOURCE_DATE_EPOCH"]
+    default_epoch = Time.now.to_i.to_s
 
-    Time.at(ENV["SOURCE_DATE_EPOCH"].to_i).utc.freeze
+    return epoch unless epoch.nil? || epoch.strip.empty?
+
+    default_epoch
+  end
+
+  ##
+  # Returns the value of Gem.raw_source_date_epoch, as a Time object.
+  #
+  # This is used throughout RubyGems for enabling reproducible builds.
+  def self.source_date_epoch
+    Time.at(self.raw_source_date_epoch.strip.to_i).utc.freeze
+  end
+
+  ##
+  # Sets the SOURCE_DATE_EPOCH environment variable, runs +block+,
+  # resets SOURCE_DATE_EPOCH, and then returns the result from running +block+.
+  def self.with_source_date_epoch(&block)
+    old_epoch = ENV["SOURCE_DATE_EPOCH"]
+    new_epoch = self.raw_source_date_epoch
+
+    ENV["SOURCE_DATE_EPOCH"] = new_epoch unless old_epoch == new_epoch
+    yield
+  ensure
+    ENV["SOURCE_DATE_EPOCH"] = old_epoch unless old_epoch == new_epoch
   end
 
   # FIX: Almost everywhere else we use the `def self.` way of defining class
