@@ -11,19 +11,24 @@ on:
 jobs:
   ruby_master:
     runs-on: ubuntu-latest
-    container:
-      image: rubylang/ruby:master-nightly-bionic
-      env:
-        TEST_TOOL: rubygems
+    strategy:
+      matrix:
+        test_tool: [rubygems, bundler]
     steps:
-      - name: Setup Requirements
-        run: |
-          gem install rake --no-document
       - uses: actions/checkout@v1
       - run: git submodule update -i
+      - name: Setup ruby
+        uses: eregon/use-ruby-action@master
+        with:
+          ruby-version: ruby-head
       - name: ruby -v
         run: ruby -v
       - name: Install Dependencies
         run: util/ci.sh before_script
+        env:
+          TEST_TOOL: ${{ matrix.test_tool }}
       - name: Run Test
         run: util/ci.sh script
+        env:
+          TEST_TOOL: ${{ matrix.test_tool }}
+    timeout-minutes: 60
