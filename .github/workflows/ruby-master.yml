@@ -24,6 +24,8 @@ jobs:
           ruby-version: ruby-head
       - name: ruby -v
         run: ruby -v
+      - name: Setup Requirements
+        run: gem install rake --no-document
       - name: Install Dependencies
         run: util/ci.sh before_script
         env:
