@@ -29,6 +29,7 @@ end
 require 'bundler'
 
 require 'minitest/autorun'
+ENV["JARS_SKIP"] = "true"
 
 ENV["JARS_SKIP"] = "true" if Gem.java_platform? # avoid unnecessary and noisy `jar-dependencies` post install hook
 
