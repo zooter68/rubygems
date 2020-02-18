@@ -18,9 +18,9 @@ status = [
   "ubuntu (2.6.5, bundler)",
   "windows (2.6.5)",
   "ubuntu_bundler_master (2.6.5)",
-  "ruby_master",
+  "ubuntu (ruby-head, rubygems)",
   "ubuntu (2.3.8)",
-  "ubuntu_rvm (ruby-head)",
+  "ubuntu (ruby-head, bundler)",
   "ubuntu (jruby-9.2.9.0)",
 ]
 
