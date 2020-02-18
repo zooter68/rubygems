@@ -33,7 +33,7 @@ jobs:
       - name: Test bundler
         run: |
           source $HOME/.rvm/scripts/rvm
-          BDV=master util/ci.sh before_script
+          util/ci.sh before_script
           util/ci.sh script
         continue-on-error: true
         env:
