@@ -35,7 +35,6 @@ jobs:
           source $HOME/.rvm/scripts/rvm
           util/ci.sh before_script
           util/ci.sh script
-        continue-on-error: true
         env:
           TEST_TOOL: bundler
     timeout-minutes: 60
