@@ -775,6 +775,7 @@ class Gem::TestCase < Minitest::Test
     lib_dir = File.join(@tempdir, "default_gems", "lib")
     lib_dir.instance_variable_set(:@gem_prelude_index, lib_dir)
     $LOAD_PATH.unshift(lib_dir)
+    Gem.set_default_gem_load_paths
     files.each do |file|
       rb_path = File.join(lib_dir, file)
       FileUtils.mkdir_p(File.dirname(rb_path))

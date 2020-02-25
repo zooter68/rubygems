@@ -176,6 +176,7 @@ module Gem
   @loaded_specs = {}
   LOADED_SPECS_MUTEX = Mutex.new
   @path_to_default_spec_map = {}
+  @preloaded_features = []
   @platforms = []
   @ruby = nil
   @ruby_api_version = nil
@@ -1270,8 +1271,32 @@ An Array (#{env.inspect}) was passed in from #{caller[3]}
           next unless $~
         end
 
+        expanded_candidates = spec.full_require_paths.map do |path|
+          @default_gem_load_paths.map do |load_path_entry|
+            "#{load_path_entry}/#{file}"
+          end
+        end.flatten
+
+        spec.activate if ($LOADED_FEATURES & expanded_candidates).any?
+
         @path_to_default_spec_map[file] = spec
         @path_to_default_spec_map[file.sub(suffix_regexp, "")] = spec
+      end
+    end
+
+    def register_loaded_feature(feature)
+      unless @path_to_default_spec_map[feature]
+        @preloaded_features << feature
+      end
+    end
+
+    ##
+    # LOAD_PATH entries not including those specified through `-I` ruby flag or
+    # RUBYOPT env variable
+
+    def set_default_gem_load_paths
+      @default_gem_load_paths = $LOAD_PATH.select do |load_path_entry|
+        load_path_entry.instance_variable_defined?(:@gem_prelude_index)
       end
     end
 
@@ -1281,6 +1306,13 @@ An Array (#{env.inspect}) was passed in from #{caller[3]}
     def find_unresolved_default_spec(path)
       default_spec = @path_to_default_spec_map[path]
       return default_spec if default_spec && loaded_specs[default_spec.name] != default_spec
+    end
+
+    ##
+    # Find a preloaded feature
+
+    def find_preloaded_feature(path)
+      @preloaded_features.find { |feature| feature == path }
     end
 
     ##
@@ -1384,7 +1416,7 @@ rescue LoadError
 end
 
 ##
-# Loads the default specs.
+# Loads the default specs and pre-loaded features.
 Gem::Specification.load_defaults
 
 require 'rubygems/core_ext/kernel_gem'

@@ -195,26 +195,37 @@ class TestGemRequire < Gem::TestCase
     assert_equal unresolved_names, []
   end
 
-  def test_activate_via_require_respects_loaded_files
-    require 'benchmark'
+  def test_activate_via_require_respects_loaded_files_not_gemified
+    refute_require('rbconfig')
 
     a1 = util_spec "a", "1", {"b" => ">= 1"}, "lib/test_gem_require_a.rb"
-    b1 = util_spec "b", "1", nil, "lib/benchmark.rb"
-    b2 = util_spec "b", "2", nil, "lib/benchmark.rb"
+    b1 = util_spec "b", "1", nil, "lib/rbconfig.rb"
+    b2 = util_spec "b", "2", nil, "lib/rbconfig.rb"
 
     install_specs b1, b2, a1
 
     assert_require 'test_gem_require_a'
     assert_equal unresolved_names, ["b (>= 1)"]
 
-    refute_require('benchmark')
+    refute_require('rbconfig')
+  end
 
-    # We detected that we should activate b-2, so we did so, but
-    # then original_require decided "I've already got benchmark.rb" loaded.
-    # This case is fine because our lazy loading is provided exactly
-    # the same behavior as eager loading would have.
+  def test_activate_via_require_respects_loaded_default_from_default_gems
+    a1 = new_default_spec "a", "1", nil, "a.rb"
 
-    assert_equal %w[a-1 b-2], loaded_spec_names
+    # simulate requiring a default gem before rubygems is loaded
+    Kernel.send(:gem_original_require, "a")
+
+    # simulate registering default specs on loading rubygems
+    install_default_gems a1
+
+    a2 = util_spec "a", "2", nil, "lib/a.rb"
+
+    install_specs a2
+
+    refute_require 'a'
+
+    assert_equal %w[a-1], loaded_spec_names
   end
 
   def test_already_activated_direct_conflict

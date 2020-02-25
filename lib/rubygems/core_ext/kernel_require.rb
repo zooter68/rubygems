@@ -44,10 +44,9 @@ module Kernel
     resolved_path = begin
       rp = nil
       Gem.suffixes.each do |s|
-        load_path_insert_index = Gem.load_path_insert_index
-        break unless load_path_insert_index
+        load_path_insert_index = Gem.load_path_insert_index  || 0
 
-        $LOAD_PATH[0...load_path_insert_index].each do |lp|
+        $LOAD_PATH.each.with_index do |lp, i|
           safe_lp = lp.dup.tap(&Gem::UNTAINT)
           begin
             if File.symlink? safe_lp # for backward compatibility
@@ -59,10 +58,14 @@ module Kernel
           end
 
           full_path = File.expand_path(File.join(safe_lp, "#{path}#{s}"))
-          if File.file?(full_path)
-            rp = full_path
-            break
-          end
+          next unless File.file?(full_path)
+
+          rp = if i >= load_path_insert_index
+                 Gem.find_preloaded_feature(full_path)
+               else
+                 full_path
+               end
+          break if rp
         end
         break if rp
       end
