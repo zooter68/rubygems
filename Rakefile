@@ -1,5 +1,3 @@
-# -*- ruby -*-
-
 require 'rubygems'
 require 'rubygems/package_task'
 require "rake/testtask"
