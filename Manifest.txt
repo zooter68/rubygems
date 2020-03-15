@@ -447,6 +447,7 @@ lib/rubygems/resolver/lock_set.rb
 lib/rubygems/resolver/lock_specification.rb
 lib/rubygems/resolver/molinillo.rb
 lib/rubygems/resolver/molinillo/lib/molinillo.rb
+lib/rubygems/resolver/molinillo/lib/molinillo/compatibility.rb
 lib/rubygems/resolver/molinillo/lib/molinillo/delegates/resolution_state.rb
 lib/rubygems/resolver/molinillo/lib/molinillo/delegates/specification_provider.rb
 lib/rubygems/resolver/molinillo/lib/molinillo/dependency_graph.rb
