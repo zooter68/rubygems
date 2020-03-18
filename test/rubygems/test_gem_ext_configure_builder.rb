@@ -26,9 +26,7 @@ class TestGemExtConfigureBuilder < Gem::TestCase
 
     output = []
 
-    Dir.chdir @ext do
-      Gem::Ext::ConfigureBuilder.build nil, @dest_path, output
-    end
+    Gem::Ext::ConfigureBuilder.build nil, @dest_path, output, [], nil, @ext
 
     assert_match(/^current directory:/, output.shift)
     assert_equal "sh ./configure --prefix=#{@dest_path}", output.shift
@@ -49,9 +47,7 @@ class TestGemExtConfigureBuilder < Gem::TestCase
     output = []
 
     error = assert_raises Gem::InstallError do
-      Dir.chdir @ext do
-        Gem::Ext::ConfigureBuilder.build nil, @dest_path, output
-      end
+      Gem::Ext::ConfigureBuilder.build nil, @dest_path, output, [], nil, @ext
     end
 
     shell_error_msg = %r{(\./configure: .*)|((?:[Cc]an't|cannot) open '?\./configure'?(?:: No such file or directory)?)}
@@ -75,9 +71,8 @@ class TestGemExtConfigureBuilder < Gem::TestCase
     end
 
     output = []
-    Dir.chdir @ext do
-      Gem::Ext::ConfigureBuilder.build nil, @dest_path, output
-    end
+
+    Gem::Ext::ConfigureBuilder.build nil, @dest_path, output, [], nil, @ext
 
     assert_contains_make_command 'clean', output[1]
     assert_contains_make_command '', output[4]

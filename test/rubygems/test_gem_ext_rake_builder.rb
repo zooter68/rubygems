@@ -19,9 +19,7 @@ class TestGemExtRakeBuilder < Gem::TestCase
     output = []
 
     build_rake_in do |rake|
-      Dir.chdir @ext do
-        Gem::Ext::RakeBuilder.build 'mkrf_conf.rb', @dest_path, output
-      end
+      Gem::Ext::RakeBuilder.build 'mkrf_conf.rb', @dest_path, output, [], nil, @ext
 
       output = output.join "\n"
 
@@ -39,10 +37,8 @@ class TestGemExtRakeBuilder < Gem::TestCase
     output = []
 
     build_rake_in do |rake|
-      Dir.chdir @ext do
-        non_empty_args_list = ['']
-        Gem::Ext::RakeBuilder.build 'mkrf_conf.rb', @dest_path, output, non_empty_args_list
-      end
+      non_empty_args_list = ['']
+      Gem::Ext::RakeBuilder.build 'mkrf_conf.rb', @dest_path, output, non_empty_args_list, nil, @ext
 
       output = output.join "\n"
 
@@ -56,9 +52,7 @@ class TestGemExtRakeBuilder < Gem::TestCase
     output = []
 
     build_rake_in do |rake|
-      Dir.chdir @ext do
-        Gem::Ext::RakeBuilder.build "ext/Rakefile", @dest_path, output, ["test1", "test2"]
-      end
+      Gem::Ext::RakeBuilder.build "ext/Rakefile", @dest_path, output, ["test1", "test2"], nil, @ext
 
       output = output.join "\n"
 
@@ -73,9 +67,7 @@ class TestGemExtRakeBuilder < Gem::TestCase
 
     build_rake_in(false) do |rake|
       error = assert_raises Gem::InstallError do
-        Dir.chdir @ext do
-          Gem::Ext::RakeBuilder.build "mkrf_conf.rb", @dest_path, output
-        end
+        Gem::Ext::RakeBuilder.build "mkrf_conf.rb", @dest_path, output, [], nil, @ext
       end
 
       assert_match %r{^rake failed}, error.message
