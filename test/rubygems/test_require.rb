@@ -196,6 +196,8 @@ class TestGemRequire < Gem::TestCase
   end
 
   def test_activate_via_require_respects_loaded_files
+    require 'benchmark'
+
     lp = $LOAD_PATH.dup
     lib_dir = File.expand_path(File.join(File.dirname(__FILE__), "../../lib"))
     if File.exist?(lib_dir)
