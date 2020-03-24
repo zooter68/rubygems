@@ -196,25 +196,18 @@ class TestGemRequire < Gem::TestCase
   end
 
   def test_activate_via_require_respects_loaded_files
-    require 'benchmark'
-
-    lp = $LOAD_PATH.dup
-    lib_dir = File.expand_path(File.join(File.dirname(__FILE__), "../../lib"))
-    if File.exist?(lib_dir)
-      $LOAD_PATH.delete lib_dir
-      $LOAD_PATH.push lib_dir
-    end
+    require 'rdoc'
 
     a1 = util_spec "a", "1", {"b" => ">= 1"}, "lib/test_gem_require_a.rb"
-    b1 = util_spec "b", "1", nil, "lib/benchmark.rb"
-    b2 = util_spec "b", "2", nil, "lib/benchmark.rb"
+    b1 = util_spec "b", "1", nil, "lib/rdoc.rb"
+    b2 = util_spec "b", "2", nil, "lib/rdoc.rb"
 
     install_specs b1, b2, a1
 
     assert_require 'test_gem_require_a'
     assert_equal unresolved_names, ["b (>= 1)"]
 
-    refute require('benchmark'), "benchmark should have already been loaded"
+    refute require('rdoc'), "rdoc should have already been loaded"
   end
 
   def test_activate_via_require_respects_loaded_files_not_gemified
