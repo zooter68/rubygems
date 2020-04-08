@@ -9,6 +9,7 @@ on:
 
 jobs:
   ruby_core:
+    if: false
     runs-on: ubuntu-latest
     strategy:
       matrix:
