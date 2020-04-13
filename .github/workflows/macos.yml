@@ -9,6 +9,7 @@ on:
 
 jobs:
   macos:
+    if: false
     runs-on: macos-latest
     strategy:
       matrix:
