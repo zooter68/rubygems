@@ -102,7 +102,7 @@ RSpec.describe "bundle info" do
       end
       @revision = revision_for(lib_path("foo-1.0"))[0...6]
 
-      install_gemfile! <<-G
+      install_gemfile! <<-G, :verbose => true
         gem "foo", :git => "#{lib_path("foo-1.0")}", :branch => "omg"
       G
       expect(the_bundle).to include_gems "foo 1.0.omg"
