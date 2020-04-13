@@ -27,9 +27,11 @@ jobs:
           bundler: none
       - name: Install dependencies
         run: |
-          ruby bin/rake spec:parallel_deps
+          bin/rake spec:parallel_deps
+        shell: bash
         working-directory: ./bundler
       - name: Run specs
         run: |
-          ruby bin/parallel_rspec spec
+          bin/parallel_rspec spec
+        shell: bash
         working-directory: ./bundler
