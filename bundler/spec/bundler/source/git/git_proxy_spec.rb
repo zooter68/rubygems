@@ -132,15 +132,16 @@ RSpec.describe Bundler::Source::Git::GitProxy do
 
       it "fails gracefully when resetting to the revision fails" do
         expect(subject).to receive(:git_retry).with(start_with("clone ")) { destination.mkpath }
-        expect(subject).to receive(:git_retry).with(start_with("fetch "))
-        expect(subject).to receive(:git).with(command).and_raise(Bundler::Source::Git::GitCommandError, command)
+        expect(subject).to receive(:git_retry).with(start_with("fetch "), :dir => destination)
+        expect(subject).to receive(:git).with(command, :dir => destination).and_raise(Bundler::Source::Git::GitCommandError.new(command, destination))
         expect(subject).not_to receive(:git)
 
         expect { subject.copy_to(destination, submodules) }.
           to raise_error(
             Bundler::Source::Git::MissingGitRevisionError,
             "Git error: command `git #{command}` in directory #{destination} has failed.\n" \
-            "Revision #{revision} does not exist in the repository #{uri}. Maybe you misspelled it?" \
+            "Revision #{revision} does not exist in the repository #{uri}. Maybe you misspelled it?\n" \
+            "If this error persists you could try removing the cache directory '#{destination}'"
           )
       end
     end
