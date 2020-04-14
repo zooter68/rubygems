@@ -47,7 +47,9 @@ module Bundler
     rescue Errno::EACCES, Errno::ENOEXEC
       Bundler.ui.error "bundler: not executable: #{cmd}"
       exit 126
-    rescue Errno::ENOENT
+    rescue Errno::ENOENT => e
+      Bundler.ui.error e.message
+      Bundler.ui.error e.backtrace
       Bundler.ui.error "bundler: command not found: #{cmd}"
       Bundler.ui.warn "Install missing gem executables with `bundle install`"
       exit 127

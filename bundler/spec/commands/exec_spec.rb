@@ -38,6 +38,7 @@ RSpec.describe "bundle exec" do
       gem "rack"
     G
 
+    puts "Shell on Windows: #{ENV["COMSPEC"]};"
     bundle "exec 'cd #{tmp("gems")} && rackup'"
 
     expect(out).to eq("1.0.0")
