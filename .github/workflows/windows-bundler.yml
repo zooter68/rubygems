@@ -32,6 +32,7 @@ jobs:
         working-directory: ./bundler
       - name: Run specs
         run: |
+          bin/rspec spec/commands/exec_spec.rb:36
           bin/parallel_rspec spec
         shell: bash
         working-directory: ./bundler
